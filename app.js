@@ -1,6 +1,6 @@
 const express = require('express')
 const app = express()
-
+const cors = require("cors");
 
 app.use(express.json())
 
@@ -45,11 +45,7 @@ app.get('/', (req, res) => {
     res.send("<div><h1>Welcome to our reverb_clone!<h1><p>Please feel free to make requests to any of these routes:\n GET: '/'<p><div>")
 })
 
-// CRUD
-// C - create ✅
-// R - read ✅
-// U - update ✅
-// D - destroy ✅
+
 
 app.get("/products", (req, res) => {
     res.send(products)
