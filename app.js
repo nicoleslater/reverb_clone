@@ -41,63 +41,65 @@ let products = [
     }
 ]
 
-app.get('/', (req, res) => {
-    res.send("<div><h1>Welcome to our reverb_clone!<h1><p>Please feel free to make requests to any of these routes:\n GET: '/'<p><div>")
-})
-
-
-
-app.get("/products", (req, res) => {
-    res.send(products)
+app.get("/products", async (req, res) => {
+    let productsDB = await db.any("SELECT * FROM products")
+    res.status(200).json({success: true, data: productsDB})
 })
 
 // /products/0, /products/1, /products/2, 
-app.get("/products/:id", validateId, (req, res) => {
+app.get("/products/:id", validateId, async (req, res) => {
     console.log("Start of main function body")
     try {
         let productId = req.params.id
-        res.status(200).send(products[productId])
+        let product = await db.oneOrNone("SELECT * FROM products WHERE id=$1", productId)
+        res.status(200).json({success: true, data: product})
     } catch(err) {
-        res.status(500).send(err)
+        res.status(500).json({success: false, data: err})
     }
 })
 
-app.post("/products/new", (req, res) => {
+app.post("/products/new", validateBody, async (req, res) => {
     let body = req.body
     console.log(req, 'THIS SHOULD BE THE BODY')
-    if (body.name && body.price) {
-        products.push(body)
-        res.send("Product successfuly made!")
-    } else {
-        res.send("Product not successfully made")
+    try {
+        let product = await db.oneOrNone("INSERT INTO products (name, price, brand, model, description, condition) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *", [body.name, body.price, body.brand, body.model, body.description, body.condition])
+        res.status(201).json({success: true, data: product})
+    } catch(err) {
+        res.status(500).json({success: false, data: err})
     }
 })
 
-app.put("/products/:id", validateId, (req, res) => {
+app.put("/products/:id", validateId, validateBody, async (req, res) => {
     console.log("testing start of update route")
     let id = req.params.id
     let body = req.body
 
-    if (body.name && body.price && body.brand && body.model && body.description) {
-        products[id] = {
-            name: body.name,
-            price: body.price,
-            brand: body.brand,
-            model: body.model,
-            description: body.description
-        }
-        res.send(products[id])
-    } else {
-        res.send("YOU WERE MISSING SOME INFORMATION!! TRY AGAIN HACKERZ")
+    try {
+        let updatedProduct = await db.oneOrNone("UPDATE products SET name=$1, price=$2, brand=$3, model=$4, description=$5, condition=$6 WHERE id=$7 RETURNING *", [
+            body.name,
+            body.price,
+            body.brand,
+            body.model,
+            body.description,
+            body.condition, 
+            id
+        ])
+        res.status(201).json({success: true, data: updatedProduct})
+    } catch (err) {
+        res.status(500).json({success: false, data: err})
     }
 
 })
 
-app.delete("/products/:id", validateId, (req, res) => {
+app.delete("/products/:id", validateId, async (req, res) => {
     let id = req.params.id
 
-    products.splice(id)
-    res.send(products)
+    try {
+        let deletedProduct = await db.oneOrNone("DELETE FROM products WHERE id=$1 RETURNING *", id)
+        res.status(200).json({success: true, data: deletedProduct})
+    } catch (error) {
+        res.status(500).json({success: false, data: err})
+    }
 })
 
 
