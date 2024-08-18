@@ -5,21 +5,21 @@ const cors = require("cors");
 app.use(express.json())
 
 
-function validateId(req, res, next) {
-    console.log("Testing middleware!")
+// function validateId(req, res, next) {
+//     console.log("Testing middleware!")
 
-    let id = req.params.id
-    if (id >= 0 && id < products.length) {
-        next()
-    }
-
-    res.status(404).send(`The id, ${id}, you have sent us is invalid!!`)
-}
+//     let id = req.params.id
+//     let product = await db.oneOrNone("SELECT * FROM products WHERE id=$1", id)
+//     if (product) {
+//         return next()
+//     }
+//     res.status(404).send(`The ${id} is invalid!!`)
+// }
 
 // condition
 let products = [
     {
-        name: "Gibson les paul 4 sale",
+        name: "Gibson les paul 4 sale", 
         price: 50000,
         brand: "Gibson",
         model: "les paul",
