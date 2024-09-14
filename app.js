@@ -4,42 +4,47 @@ const cors = require("cors");
 
 app.use(express.json())
 
+// function validateBody(req, res, next) {
+//     console.log("Testing ValidateBody")
 
-// function validateId(req, res, next) {
-//     console.log("Testing middleware!")
-
-//     let id = req.params.id
-//     let product = await db.oneOrNone("SELECT * FROM products WHERE id=$1", id)
-//     if (product) {
-//         return next()
-//     }
-//     res.status(404).send(`The ${id} is invalid!!`)
+//     let body = req.body
+//     if(body )
 // }
+function validateId(req, res, next) {
+    console.log("Testing middleware!")
+
+    let id = req.params.id
+    if (id >= 0 && id < products.length) {
+        return next()
+    }
+
+    res.status(404).send(`The id, ${id}, you have sent us is invalid!!`)
+}
 
 // condition
-let products = [
-    {
-        name: "Gibson les paul 4 sale", 
-        price: 50000,
-        brand: "Gibson",
-        model: "les paul",
-        description: "Selling my grandfathers gibson from the 50's. I know what i have!!!"
-    },
-    {
-        name: "old ibanez",
-        price: 500,
-        brand: "Ibanez",
-        model: "LMDO9039880",
-        description: "Selling my first guitar"
-    },
-    {
-        name: "Selling indoor drumming kit",
-        price: 450,
-        brand: "Mitchell",
-        model: "ghfj98793",
-        description: "Perfect for those who live in an apartment but still want to rock."
-    }
-]
+// let products = [
+//     {
+//         name: "Gibson les paul 4 sale", 
+//         price: 50000,
+//         brand: "Gibson",
+//         model: "les paul",
+//         description: "Selling my grandfathers gibson from the 50's. I know what i have!!!"
+//     },
+//     {
+//         name: "old ibanez",
+//         price: 500,
+//         brand: "Ibanez",
+//         model: "LMDO9039880",
+//         description: "Selling my first guitar"
+//     },
+//     {
+//         name: "Selling indoor drumming kit",
+//         price: 450,
+//         brand: "Mitchell",
+//         model: "ghfj98793",
+//         description: "Perfect for those who live in an apartment but still want to rock."
+//     }
+// ]
 
 app.get("/products", async (req, res) => {
     let productsDB = await db.any("SELECT * FROM products")

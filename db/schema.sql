@@ -14,4 +14,4 @@ CREATE TABLE products (
     model VARCHAR(15),
     description TEXT,
     condition VARCHAR(10) NOT NULL
-)
+);
